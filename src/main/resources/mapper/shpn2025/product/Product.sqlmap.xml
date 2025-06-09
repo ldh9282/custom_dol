@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Product">
+
+	<select id="selectProductInfoList" parameterType="CustomMap" resultType="CustomMap">
+		SELECT /* Product.selectProductInfoList */ 
+			*
+		FROM
+		(
+			SELECT
+				TB001.입점사일련번호 AS MERCHANT_SNO
+				, TB001.입점사명 AS MERCHANT_NAME
+				, TB002.상품일련번호 AS PRODUCT_SNO
+				, TB002.상품명 AS PRODUCT_NAME
+				, TB003.상품금액일련번호 AS PRODUCT_PRICE_SNO
+				, TB003.상품금액 AS PRODUCT_PRICE
+				, TB002.시스템생성자 AS SYS_CREATOR
+				, TB002.시스템수정자 AS SYS_MODIFIER
+				, TO_CHAR(TB002.시스템생성일, 'YYYY-MM-DD HH24:MI:SS') AS SYS_CREATED_AT
+				, TO_CHAR(TB002.시스템수정일, 'YYYY-MM-DD HH24:MI:SS') AS SYS_MODIFIED_AT
+				, COUNT(1) OVER() AS COUNT -- 상품 총개수
+				, (
+					SELECT COUNT(1)
+					FROM SHPN2025.TB004 TB004
+					WHERE TB004.상품일련번호 = TB002.상품일련번호
+				) AS PRODUCT_OPTION_COUNT -- 상품당 상품옵션의 개수
+			FROM
+				SHPN2025.TB001 TB001
+				, SHPN2025.TB002 TB002
+				, SHPN2025.TB003 TB003
+			WHERE
+				TB001.입점사일련번호 = TB002.입점사일련번호
+                AND TB002.상품일련번호 = TB003.상품일련번호
+				<if test="merchantSno != null and merchantSno != ''">
+				AND TB001.입점사일련번호 = #{merchantSno} :: BIGINT
+				</if>
+		)
+		OFFSET (#{pageNum} :: BIGINT - 1) * #{rowAmountPerPage} :: BIGINT  
+		LIMIT #{rowAmountPerPage} :: BIGINT
+	</select>
+	
+
+</mapper>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Sample">
+
+	<select id="selectSampleUserSno" parameterType="CustomMap" resultType="String">
+		SELECT /* Sample.selectSampleUserSno */ NEXTVAL('SAMPLE.TB001_SEQ') AS SAMPLE_USER_SNO
+	</select>
+	
+	<select id="selectSampleUserDtlSno" parameterType="CustomMap" resultType="String">
+		SELECT /* Sample.selectSampleUserDtlSno */ NEXTVAL('SAMPLE.TB002_SEQ') AS SAMPLE_USER_DTL_SNO
+	</select>
+	
+	<insert id="insertSampleUser">
+		INSERT INTO /* Sample.insertSampleUser */
+		    SAMPLE.TB001(
+		        샘플유저일련번호,
+		        샘플유저명,
+		        샘플유저이메일,
+		        시스템생성자,
+		        시스템수정자,
+		        시스템생성일,
+		        시스템수정일
+		    )
+		VALUES
+		    (
+		        #{sampleUserSno} :: BIGINT, 
+		        #{sampleUserName}, 
+		        #{sampleUserEmail}, 
+		        #{sysCreator}, 
+		        #{sysCreator}, 
+		        now(), 
+		        now()
+		    )
+	</insert>
+	
+	<insert id="insertSampleUserDtl">
+		INSERT INTO /* Sample.insertSampleUserDtl */
+		    SAMPLE.TB002(
+		        샘플유저일련번호,
+		        샘플유저상세일련번호,
+		        샘플유저도로명주소,
+		        샘플유저상세주소,
+		        샘플유저기본주소여부,
+		        시스템생성자,
+		        시스템수정자,
+		        시스템생성일,
+		        시스템수정일
+		    )
+		VALUES
+		    (
+		        #{sampleUserSno} :: BIGINT, 
+		        #{sampleUserDtlSno} :: BIGINT, 
+		        #{sampleUserRdNameAddr}, 
+		        #{sampleUserDtlAddr}, 
+		        #{sampleUserBaseAddrYn}, 
+		        #{sysCreator}, 
+		        #{sysCreator}, 
+		        now(), 
+		        now()
+		    )
+	</insert>
+	
+	<select id="selectSampleUser" parameterType="CustomMap" resultType="CustomMap">
+		SELECT
+			/* Sample.selectSampleUser */
+		    샘플유저일련번호 AS SAMPLE_USER_SNO,
+		    샘플유저명 AS SAMPLE_USER_NAME,
+		    샘플유저이메일 AS SAMPLE_USER_EMAIL,
+		    시스템생성자 AS SYS_CREATOR,
+		    시스템수정자 AS SYS_MODIFIER,
+		    TO_CHAR(시스템생성일, 'YYYY-MM-DD HH24:MI:SS') AS SYS_CREATED_AT,
+		    TO_CHAR(시스템수정일, 'YYYY-MM-DD HH24:MI:SS') AS SYS_MODIFIED_AT
+		FROM
+		    SAMPLE.TB001
+		WHERE
+			샘플유저일련번호 = #{sampleUserSno} :: BIGINT	
+	</select>
+	
+	<select id="selectSampleUserDtl" parameterType="CustomMap" resultType="CustomMap">
+		SELECT
+		    /* Sample.selectSampleUserDtl */
+		    TB001.샘플유저일련번호 AS SAMPLE_USER_SNO,
+		    TB002.샘플유저상세일련번호 AS SAMPLE_USER_DTL_SNO,
+		    TB001.샘플유저명 AS SAMPLE_USER_NAME,
+		    TB001.샘플유저이메일 AS SAMPLE_USER_EMAIL,
+		    TB002.샘플유저도로명주소 AS SAMPLE_USER_RD_NAME_ADDR,
+		    TB002.샘플유저상세주소 AS SAMPLE_USER_DTL_ADDR,
+		    TB002.샘플유저기본주소여부 AS SAMPLE_USER_BASE_ADDR_YN,
+		    TB002.시스템생성자 AS SYS_CREATOR,
+		    TB002.시스템수정자 AS SYS_MODIFIER,
+		    TO_CHAR(TB002.시스템생성일, 'YYYY-MM-DD HH24:MI:SS') AS SYS_CREATED_AT,
+		    TO_CHAR(TB002.시스템수정일, 'YYYY-MM-DD HH24:MI:SS') AS SYS_MODIFIED_AT
+		FROM
+		    SAMPLE.TB001 TB001,
+		    SAMPLE.TB002 TB002
+		WHERE
+		    TB001.샘플유저일련번호 = TB002.샘플유저일련번호
+		    AND TB002.샘플유저일련번호 = #{sampleUserSno} :: BIGINT
+		    AND TB002.샘플유저상세일련번호 = #{sampleUserDtlSno} :: BIGINT	
+	</select>
+	
+	<select id="selectSampleUserInfoList" parameterType="CustomMap" resultType="CustomMap">
+		SELECT
+		    /* Sample.selectSampleUserInfoList */
+		    TB001.샘플유저일련번호 AS SAMPLE_USER_SNO,
+		    TB002.샘플유저상세일련번호 AS SAMPLE_USER_DTL_SNO,
+		    TB001.샘플유저명 AS SAMPLE_USER_NAME,
+		    TB001.샘플유저이메일 AS SAMPLE_USER_EMAIL,
+		    TB002.샘플유저도로명주소 AS SAMPLE_USER_RD_NAME_ADDR,
+		    TB002.샘플유저상세주소 AS SAMPLE_USER_DTL_ADDR,
+		    TB002.샘플유저기본주소여부 AS SAMPLE_USER_BASE_ADDR_YN,
+		    TB002.시스템생성자 AS SYS_CREATOR,
+		    TB002.시스템수정자 AS SYS_MODIFIER,
+		    TO_CHAR(TB002.시스템생성일, 'YYYY-MM-DD HH24:MI:SS') AS SYS_CREATED_AT,
+		    TO_CHAR(TB002.시스템수정일, 'YYYY-MM-DD HH24:MI:SS') AS SYS_MODIFIED_AT
+		FROM
+		    SAMPLE.TB001 TB001,
+		    SAMPLE.TB002 TB002
+		WHERE
+		    TB001.샘플유저일련번호 = TB002.샘플유저일련번호
+		    AND TB002.샘플유저일련번호 = #{sampleUserSno} :: BIGINT
+	</select>
+	
+	<update id="updateSampleUserDtl" parameterType="CustomMap">
+		UPDATE /* Sample.updateSampleUserDtl */
+		    SAMPLE.TB002
+		SET
+		    시스템수정자 = #{sysModifier}
+			<if test="sampleUserRdNameAddr != null and sampleUserRdNameAddr != ''">
+		    , 샘플유저도로명주소 = #{sampleUserRdNameAddr}
+			</if>
+			<if test="sampleUserDtlAddr != null and sampleUserDtlAddr != ''">
+		    , 샘플유저상세주소 = #{sampleUserDtlAddr}
+		    </if>
+		    <if test="sampleUserBaseAddrYn != null and sampleUserBaseAddrYn != ''">
+		    , 샘플유저기본주소여부 = #{sampleUserBaseAddrYn}
+		    </if>
+		    , 시스템수정일 = now()
+		WHERE 1 = 1
+			AND 샘플유저일련번호 = #{sampleUserSno} :: BIGINT
+			AND 샘플유저상세일련번호 = #{sampleUserDtlSno} :: BIGINT
+	</update>
+	
+	<update id="updateSampleUserBaseAddrYn" parameterType="CustomMap">
+		UPDATE /* Sample.updateSampleUserBaseAddrYn */
+		    SAMPLE.TB002
+		SET
+		    시스템수정자 = #{sysModifier}
+		    <if test="sampleUserBaseAddrYn != null and sampleUserBaseAddrYn != ''">
+		    , 샘플유저기본주소여부 = #{sampleUserBaseAddrYn}
+		    </if>
+		    , 시스템수정일 = now()
+		WHERE 1 = 1
+			AND 샘플유저일련번호 = #{sampleUserSno} :: BIGINT
+			<if test="sampleUserDtlSno != null and sampleUserDtlSno != ''">
+			AND 샘플유저상세일련번호 = #{sampleUserDtlSno} :: BIGINT
+			</if>
+	</update>
+	
+	<update id="deleteSampleUserDtl" parameterType="CustomMap">
+		DELETE FROM /* Sample.deleteSampleUserDtl */
+		    SAMPLE.TB002
+		WHERE 1 = 1
+			AND 샘플유저일련번호 = #{sampleUserSno} :: BIGINT
+			AND 샘플유저상세일련번호 = #{sampleUserDtlSno} :: BIGINT
+	</update>
+	
+	<update id="mergeSampleUserDtl" parameterType="CustomMap">
+		MERGE INTO SAMPLE.TB002 /* Sample.mergeSampleUserDtl */
+	    USING (SELECT 1)
+	    ON
+	        샘플유저일련번호 = #{sampleUserSno} :: BIGINT
+	        AND 샘플유저상세일련번호 = #{sampleUserDtlSno} :: BIGINT
+	    WHEN MATCHED THEN
+	        UPDATE SET
+	            시스템수정자 = #{sysActor}
+	            <if test="sampleUserRdNameAddr != null and sampleUserRdNameAddr != ''">
+	            , 샘플유저도로명주소 = #{sampleUserRdNameAddr}
+	            </if>
+	            <if test="sampleUserDtlAddr != null and sampleUserDtlAddr != ''">
+	            , 샘플유저상세주소 = #{sampleUserDtlAddr}
+	            </if>
+	            <if test="sampleUserBaseAddrYn != null and sampleUserBaseAddrYn != ''">
+	            , 샘플유저기본주소여부 = #{sampleUserBaseAddrYn}
+	            </if>
+	            , 시스템수정일 = now()
+	    WHEN NOT MATCHED THEN
+	        INSERT (
+	            샘플유저일련번호,
+	            샘플유저상세일련번호,
+	            샘플유저도로명주소,
+	            샘플유저상세주소,
+	            샘플유저기본주소여부,
+	            시스템생성자,
+	            시스템수정자,
+	            시스템생성일,
+	            시스템수정일
+	        )
+	        VALUES (
+	            #{sampleUserSno} :: BIGINT,
+	            #{sampleUserDtlSno} :: BIGINT,
+	            #{sampleUserRdNameAddr},
+	            #{sampleUserDtlAddr},
+	            #{sampleUserBaseAddrYn},
+	            #{sysActor},
+	            #{sysActor},
+	            now(),
+	            now()
+	        )
+	</update>
+
+</mapper>
